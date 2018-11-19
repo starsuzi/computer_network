@@ -8,24 +8,28 @@
 
 #define SERVER_PORT 47500
 
-#define FLAG_HELLO ((unsigned char) (0x01 << 7))
-#define FLAG_INSTRUCTION ((unsigned char) (0x01 << 6))
-#define FLAG_RESPONSE ((unsigned char) (0x01 << 5))
-#define FLAG_TERMINATE ((unsigned char) (0x01 << 4))
+#define FLAG_HELLO			((uint8_t) (0x01 << 7))
+#define FLAG_INSTRUCTION 	((uint8_t) (0x01 << 6))
+#define FLAG_RESPONSE 		((uint8_t) (0x01 << 5))
+#define FLAG_TERMINATE 		((uint8_t) (0x01 << 4))
 
-#define OP_ECHO ((unsigned char)(0x00))
-#define OP_INCREMENT ((unsigned char)(0x01))
-#define OP_DECREMENT ((unsigned char)(0x02))
+#define OP_ECHO 			((uint8_t)(0x00))
+#define OP_INCREMENT 		((uint8_t)(0x01))
+#define OP_DECREMENT 		((uint8_t)(0x02))
 
-struct header{
-    unsigned char flag;
-    unsigned char operation;
-    unsigned short data_len;
-    unsigned int seq_num;
-    char data[1024];
+struct hw_packet{
+    uint8_t flag;
+    uint8_t operation;
+    uint16_t data_len;
+    uint32_t seq_num;
+    uint8_t data[1024];
 };
 
+//function for sending packets
+void send_p(int s, uint8_t flag, uint8_t op, uint16_t len, uint32_t seq, uint8_t *data);
+
 int main(){
+	FILE *fp;
     struct hostent *hp;
     struct sockaddr_in sin;
     char host[] = "127.0.0.1";
@@ -74,120 +78,38 @@ int main(){
 		exit(1);
 	}
 
-	//hw_packet 생성
-	struct header *header_p;
-	header_p = (struct header *)malloc(sizeof(struct header));
-    
-	//HELLO
-	header_p -> flag = FLAG_HELLO;
-	header_p -> operation = OP_ECHO;
-	header_p -> data_len = htonl(4);
-	header_p -> seq_num = htons((unsigned short)0); //비트 수 맞춤
-	
-	*data_long = htonl(2016320120);
+	uint32_t id = 2016320120;
+	uint8_t tmp[4];
+	memcpy(tmp, &id, sizeof(uint32_t));
+	send_p(s, FLAG_HELLO, OP_ECHO, 4, 0, tmp);
 
-	memcpy(buf, header_p, sizeof(struct header)); //copy header
-	memcpy(buf+sizeof(struct header), data_long, 4);//copy data
-
-	printf("*** starting ***\n\n");
-	printf("sending first hello msg..\n");
-
-	//읽어오기
 	while(1){
-		memset(buf_get,0,sizeof(buf_get));
-		read(s,buf_get,1024);
+		struct hw_packet rcvd_p;
+		recv(s, (char*) &rcvd_p, sizeof(struct hw_packet), 0);
 
-		memset(flag_get,0,sizeof(unsigned char));
-		memcpy(flag_get,buf_get,1);
+		printf("rcvd flag : %02X\n", rcvd_packet.flag);
+		printf("rcvd op   : %02X\n", rcvd_packet.operation);
+		printf("rcvd len  : %04X\n", rcvd_packet.data_len);
+		printf("rcvd seq  : %08X\n", rcvd_packet.seq_num);
+		printf("rcvd data : ");
 
-		memset(operation_get,0,sizeof(unsigned char));
-		memcpy(operation_get,buf_get+1,1);
-
-		// Hello
-		if(flag_get[0] == FLAG_HELLO){
-			printf("received a hello message from the server! \n waiting for the first instruction message...\n");
+		int i;
+		for(i = 0; i<rcvd_p.data_len;i++){
+			printf("%02X", rcvd_p.data[i]);
 		}
+		printf("\n\n");
 
-		// Instruction
-		else if(flag_get[0] == FLAG_INSTRUCTION){
-			seq_num_get = ntohs(*(unsigned short *)(buf_get+2));
-			data_len_get = ntohl(*(int *)(buf_get+4));
-			printf("received an instruction message! received data_len : %d bytes\n",data_len_get);
-
-			//ECHO req
-			if(operation_get[0] == OP_ECHO){
-				//print recieved String
-				printf("operation type is echo!\n");
-
-				memset(data_str,0,strlen(data_str));
-
-				for(i=0;i<data_len_get;i++){
-					data_str[i] = (buf_get+sizeof(struct header))[i];
+		if(rcvd_p.flag == FLAG_INSTRUCTION){
+			if(rcvd_p.operation != OP_ECHO){
+				uint32_t tmp;
+				memcpy(&tmp, rcvd_p.data, sizeof(uint32_t));
+				if(rcvd_p.operation == OP_INCREMENT){
+					tmp ++;
 				}
-				header_p -> flag = FLAG_RESPONSE;
-				header_p -> operation = OP_ECHO;
-				header_p -> seq_num = htons(seq_num_get);
-				header_p -> data_len = htonl(data_len_get);
-
-				memset(buf,0,sizeof(buf));
-				memcpy(buf,header_p,sizeof(struct header)); //copy header
-				memcpy(buf+sizeof(struct header), data_str, strlen(data_str)+1); //copy data
-				len = sizeof(struct header) + data_len_get + 1;
-				send(s,buf,len,0);
-
-				printf("sent response message with seqence number %d to server\n\n\n",seq_num_get);
-
+				memcyp();
+				
 			}
-
-			//Increment req
-			else if(operation_get[0] == OP_INCREMENT){
-				data_int = ntohl(*(int *)(buf_get+sizeof(struct header)));
-				printf("operation type is increment!\n");
-
-				data_int = htonl(++data_int);
-
-				header_p -> flag = FLAG_RESPONSE;
-				header_p -> operation = OP_ECHO;
-				header_p -> seq_num = htons(seq_num_get); 
-				header_p -> data_len = htonl(4);
-
-				memset(buf,0,sizeof(buf));
-				memcpy(buf, header_p, sizeof(struct header)); // header 복사 
-				memcpy(buf + sizeof(struct header), &data_int, 4); // segmentation fault
-
-				len = sizeof(struct header) + sizeof(data_int);
-				send(s,buf,len,0);
-				printf("sent response message with seqence number %d to server\n\n\n",seq_num_get);		
-		
-			}
-
-			//Decrement req
-			else {
-				data_int = ntohl(*(int *)(buf_get+sizeof(struct header)));
-				printf("operation type is decrement!\n");
-
-				data_int = htonl(--data_int);
-
-				header_p -> flag = FLAG_RESPONSE;
-				header_p -> operation = OP_ECHO;
-				header_p -> seq_num = htons(seq_num_get); 
-				header_p -> data_len = htonl(4);
-
-				memset(buf,0,sizeof(buf));
-				memcpy(buf, header_p, sizeof(struct header)); // header 복사 
-				memcpy(buf + sizeof(struct header), &data_int, 4); // segmentation fault
-
-				len = sizeof(struct header) + sizeof(data_int);
-				send(s,buf,len,0);
-				printf("sent response message with seqence number %d to server\n\n\n",seq_num_get);		
-			}
-		}
-		
-		//Terminate
-		else if(flag_get[0] == FLAG_TERMINATE){
-			printf("received terminate msg! terminating...\n");
-			close(s);
-			return 0;
 		}
 	}
+
 }
