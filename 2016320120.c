@@ -146,7 +146,7 @@ int main(){
 
 				data_int = htonl(++data_int);
 
-				header_p -> flags = FLAG_RESPONSE;
+				header_p -> flag = FLAG_RESPONSE;
 				header_p -> operation = OP_ECHO;
 				header_p -> seq_num = htons(seq_num_get); 
 				header_p -> data_len = htonl(4);
@@ -168,7 +168,7 @@ int main(){
 
 				data_int = htonl(--data_int);
 
-				header_p -> flags = FLAG_RESPONSE;
+				header_p -> flag = FLAG_RESPONSE;
 				header_p -> operation = OP_ECHO;
 				header_p -> seq_num = htons(seq_num_get); 
 				header_p -> data_len = htonl(4);
