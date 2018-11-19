@@ -38,7 +38,7 @@ int main(){
 	long long * data_long;
 	long long tmp;
 	int len;
-	data_log = &tmp;
+	data_long=&tmp;
 	int i;
 
 	unsigned char flag_get[2];
