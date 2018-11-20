@@ -59,11 +59,21 @@ int main(int argc, char * argv[]) {
         exit(1);
     }
 
+    printf("*** starting ***\n\n");
+
     uint32_t student_id = 2016320120;
     uint8_t tmp[4];
+
     memcpy(tmp, &student_id, sizeof(uint32_t));
+    printf("sending first hello msg...\n");
+
     send_packet(s, FLAG_HELLO, OP_ECHO, 4, 0, tmp);
 
+    //recv
+
+    printf("received hello message from the server!\n");
+	printf("waiting for the first instruction message...\n");
+    
     while(1) {
         struct hw_packet rcvd_packet;
         recv(s, (char*) &rcvd_packet, sizeof(struct hw_packet), 0);
@@ -128,7 +138,10 @@ void send_packet(int s, uint8_t flag, uint8_t op, uint16_t len, uint32_t seq, ui
     //printf("send flag : %02X\n", send_packet.flag);
     //printf("send op   : %02X\n", send_packet.operation);
     //printf("send len  : %04X\n", send_packet.data_len);
-    printf("sent response msg with seq.num. %d to server.\n", send_packet.seq_num);
+    if(flag != FLAG_HELLO){
+        printf("sent response msg with seq.num. %d to server.\n", send_packet.seq_num);
+    }
+    printf("\n");
     //printf("send data : ");
     //int i;
     //for(i = 0; i < send_packet.data_len; i++)
