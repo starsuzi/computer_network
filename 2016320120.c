@@ -79,7 +79,7 @@ int main(int argc, char * argv[]) {
         //printf("\n\n");
 
         if(rcvd_packet.flag == FLAG_INSTRUCTION) {
-            printf("received intruction message!");
+            printf("received intruction message!\n");
             if(rcvd_packet.operation == OP_ECHO){
                 uint32_t tmp;
                 memcpy(&tmp, rcvd_packet.data, sizeof(uint32_t));
@@ -96,12 +96,14 @@ int main(int argc, char * argv[]) {
                 uint32_t tmp;
                 memcpy(&tmp, rcvd_packet.data, sizeof(uint32_t));
 				if(rcvd_packet.operation == OP_INCREMENT){
-					printf("operation type is increment");
+					printf("operation type is increment\n");
 					tmp++;
+                    printf("increment : %d\n",tmp);
 				}
 				else{
-					printf("operation type is decrement");
+					printf("operation type is decrement\n");
 					tmp--;
+                     printf("decrement : %d\n",tmp);
 				}
                 //tmp += (rcvd_packet.operation == OP_INCREMENT) ? 1 : -1;
                 memcpy(rcvd_packet.data, &tmp, sizeof(uint32_t));
@@ -129,9 +131,9 @@ void send_packet(int s, uint8_t flag, uint8_t op, uint16_t len, uint32_t seq, ui
 
     //printf("send flag : %02X\n", send_packet.flag);
     //printf("send op   : %02X\n", send_packet.operation);
-    printf("send len  : %04X\n", send_packet.data_len);
+    //printf("send len  : %04X\n", send_packet.data_len);
     printf("sent response msg with seq.num. %04X to server.\n", send_packet.seq_num);
-    //printf("send data : ");
+    printf("send data : ");
     //int i;
     //for(i = 0; i < send_packet.data_len; i++)
     //    printf("%02X", send_packet.data[i]);
