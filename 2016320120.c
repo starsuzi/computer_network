@@ -70,16 +70,29 @@ int main(int argc, char * argv[]) {
 
         //printf("rcvd flag : %02X\n", rcvd_packet.flag);
         //printf("rcvd op   : %02X\n", rcvd_packet.operation);
-        //printf("rcvd len  : %04X\n", rcvd_packet.data_len);
+        printf("received data_len  : %04X bytes\n", rcvd_packet.data_len);
         //printf("rcvd seq  : %08X\n", rcvd_packet.seq_num);
-        //printf("rcvd data : ");
-        int i;
-        for(i = 0; i < rcvd_packet.data_len; i++)
-            printf("%02X", rcvd_packet.data[i]);
-        printf("\n\n");
+        //printf("received data : ");
+        //int i;
+        //for(i = 0; i < rcvd_packet.data_len; i++)
+            //printf("%02X", rcvd_packet.data[i]);
+        //printf("\n\n");
 
         if(rcvd_packet.flag == FLAG_INSTRUCTION) {
-            if(rcvd_packet.operation != OP_ECHO) {
+            printf("received intruction message!");
+            if(rcvd_packet.operation == OP_ECHO){
+                uint32_t tmp;
+                memcpy(&tmp, rcvd_packet.data, sizeof(uint32_t));
+                printf("operation type is echo.\n");
+                printf("echo : ");
+                int i;
+                for(i = 0; i < rcvd_packet.data_len; i++)
+                    printf("%02X", rcvd_packet.data[i]);
+                printf("\n\n");
+                
+            }
+
+            else if(rcvd_packet.operation != OP_ECHO) {
                 uint32_t tmp;
                 memcpy(&tmp, rcvd_packet.data, sizeof(uint32_t));
 				if(rcvd_packet.operation == OP_INCREMENT){
@@ -97,8 +110,10 @@ int main(int argc, char * argv[]) {
             send_packet(s, FLAG_RESPONSE, OP_ECHO, rcvd_packet.data_len, rcvd_packet.seq_num, rcvd_packet.data);
         }
 
-        if(rcvd_packet.flag == FLAG_TERMINATE)
+        if(rcvd_packet.flag == FLAG_TERMINATE){
+            printf("received terminate msg! terminating...");
             break;
+        }
     }
 
     return 0;
@@ -114,13 +129,13 @@ void send_packet(int s, uint8_t flag, uint8_t op, uint16_t len, uint32_t seq, ui
 
     //printf("send flag : %02X\n", send_packet.flag);
     //printf("send op   : %02X\n", send_packet.operation);
-    //printf("send len  : %04X\n", send_packet.data_len);
-    //printf("send seq  : %08X\n", send_packet.seq_num);
+    printf("send len  : %04X\n", send_packet.data_len);
+    printf("sent response msg with seq.num. %04X to server.\n", send_packet.seq_num);
     //printf("send data : ");
-    int i;
-    for(i = 0; i < send_packet.data_len; i++)
-        printf("%02X", send_packet.data[i]);
-    printf("\n\n");
+    //int i;
+    //for(i = 0; i < send_packet.data_len; i++)
+    //    printf("%02X", send_packet.data[i]);
+    //printf("\n\n");
 
     send(s, (char*) &send_packet, sizeof(struct hw_packet), 0);
 }
