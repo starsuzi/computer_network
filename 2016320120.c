@@ -63,6 +63,7 @@ int main(int argc, char * argv[]) {
 
     uint32_t student_id = 2016320120;
     uint8_t tmp[4];
+    
     struct hw_packet rcvd_packet;
 
     memcpy(tmp, &student_id, sizeof(uint32_t));
