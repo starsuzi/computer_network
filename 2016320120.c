@@ -133,7 +133,7 @@ void send_packet(int s, uint8_t flag, uint8_t op, uint16_t len, uint32_t seq, ui
     //printf("send op   : %02X\n", send_packet.operation);
     //printf("send len  : %04X\n", send_packet.data_len);
     printf("sent response msg with seq.num. %04X to server.\n", send_packet.seq_num);
-    printf("send data : ");
+    //printf("send data : ");
     //int i;
     //for(i = 0; i < send_packet.data_len; i++)
     //    printf("%02X", send_packet.data[i]);
