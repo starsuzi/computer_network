@@ -95,13 +95,13 @@ int main(void) {
         //printf("\n\n");
 
         if(rcvd_packet.flag == FLAG_INSTRUCTION) {
-            printf("received intruction message!\n");
-            printf("received data_len  : %d bytes\n", rcvd_packet.data_len);
+            //printf("received intruction message!\n");
+            //printf("received data_len  : %d bytes\n", rcvd_packet.data_len);
             if(rcvd_packet.operation == OP_ECHO){
                 uint32_t tmp;
                 memcpy(&tmp, rcvd_packet.data, sizeof(uint32_t));
-                printf("operation type is echo.\n");
-                printf("echo : %s\n", rcvd_packet.data);
+                //printf("operation type is echo.\n");
+                //printf("echo : %s\n", rcvd_packet.data);
             }
 
             if(rcvd_packet.operation == OP_INCREMENT || rcvd_packet.operation == OP_DECREMENT) {
@@ -117,12 +117,12 @@ int main(void) {
                 
                 memcpy(&(file[file_index]), rcvd_packet.data, rcvd_packet.data_len);
 
-                print("received push instruction!!\n");
+                printf("received push instruction!!\n");
                 printf("received seq_num : %d\n", rcvd_packet.seq_num);
                 printf("received data_len : %d\n", rcvd_packet.data_len);
                 printf("saved bytes from index %d to %d\n", rcvd_packet.seq_num, (rcvd_packet.seq_num+rcvd_packet.data_len-1));
                 printf("saved byte stream (character representation) : %s\n", rcvd_packet.data);
-                printf("current file size is %d: \n\n", rcvd_packet.seq_num + rcvd_packet.data_len);
+                printf("current file size is : %d\n\n", rcvd_packet.seq_num + rcvd_packet.data_len);
 
                 file_index += rcvd_packet.data_len;               
                 send_packet(s, FLAG_RESPONSE, OP_PUSH, 0, 0, NULL);
@@ -173,7 +173,7 @@ void send_packet(int s, uint8_t flag, uint8_t op, uint16_t len, uint32_t seq, ui
     //printf("send op   : %02X\n", send_packet.operation);
     //printf("send len  : %04X\n", send_packet.data_len);
     if(flag != FLAG_HELLO){
-        printf("sent response msg with seq.num. %d to server.\n", send_packet.seq_num);
+        //printf("sent response msg with seq.num. %d to server.\n", send_packet.seq_num);
     }
     printf("\n");
     //printf("send data : ");
