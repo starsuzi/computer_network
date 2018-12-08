@@ -84,24 +84,11 @@ int main(void) {
         
         recv(s, (char*) &rcvd_packet, sizeof(struct hw_packet), 0);
 
-        //printf("rcvd flag : %02X\n", rcvd_packet.flag);
-        //printf("rcvd op   : %02X\n", rcvd_packet.operation);
-        //printf("received data_len  : %d bytes\n", rcvd_packet.data_len);
-        //printf("rcvd seq  : %08X\n", rcvd_packet.seq_num);
-        //printf("received data : ");
-        //int i;
-        //for(i = 0; i < rcvd_packet.data_len; i++)
-            //printf("%02X", rcvd_packet.data[i]);
-        //printf("\n\n");
-
         if(rcvd_packet.flag == FLAG_INSTRUCTION) {
-            //printf("received intruction message!\n");
-            //printf("received data_len  : %d bytes\n", rcvd_packet.data_len);
             if(rcvd_packet.operation == OP_ECHO){
                 uint32_t tmp;
                 memcpy(&tmp, rcvd_packet.data, sizeof(uint32_t));
                 printf("operation type is echo.\n");
-                //printf("echo : %s\n", rcvd_packet.data);
             }
 
             if(rcvd_packet.operation == OP_INCREMENT || rcvd_packet.operation == OP_DECREMENT) {
@@ -168,19 +155,6 @@ void send_packet(int s, uint8_t flag, uint8_t op, uint16_t len, uint32_t seq, ui
     send_packet.seq_num = seq;
     if(data != NULL)
     memcpy(send_packet.data, data, len);
-
-    //printf("send flag : %02X\n", send_packet.flag);
-    //printf("send op   : %02X\n", send_packet.operation);
-    //printf("send len  : %04X\n", send_packet.data_len);
-    if(flag != FLAG_HELLO){
-        //printf("sent response msg with seq.num. %d to server.\n", send_packet.seq_num);
-    }
-    printf("\n");
-    //printf("send data : ");
-    //int i;
-    //for(i = 0; i < send_packet.data_len; i++)
-    //    printf("%02X", send_packet.data[i]);
-    //printf("\n\n");
 
     send(s, (char*) &send_packet, sizeof(struct hw_packet), 0);
 }
