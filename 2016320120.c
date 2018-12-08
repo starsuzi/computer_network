@@ -115,7 +115,7 @@ int main(void) {
             } 
             else if(rcvd_packet.operation == OP_PUSH){
                 
-                memcpy(&(file[file_index]), rcvd_packet.data, len);
+                memcpy(&(file[file_index]), rcvd_packet.data, rcvd_packet.data_len);
 
                 print("received push instruction!!\n");
                 printf("received seq_num : %d\n", rcvd_packet.seq_num);
@@ -124,7 +124,7 @@ int main(void) {
                 printf("saved byte stream (character representation) : %s\n", rcvd_packet.data);
                 printf("current file size is %d: \n\n", rcvd_packet.seq_num + rcvd_packet.data_len);
 
-                file_index += len;               
+                file_index += rcvd_packet.data_len;               
                 send_packet(s, FLAG_RESPONSE, OP_PUSH, 0, 0, NULL);
 
             }
