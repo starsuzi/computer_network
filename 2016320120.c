@@ -122,7 +122,7 @@ int main(void) {
                 printf("received data_len : %d\n", rcvd_packet.data_len);
                 printf("saved bytes from index %d to %d\n", rcvd_packet.seq_num, (rcvd_packet.seq_num+rcvd_packet.data_len-1));
                 printf("saved byte stream (character representation) : %s\n", rcvd_packet.data);
-                printf("current file size is : \n\n", rcvd_packet.seq_num + rcvd_packet.data_len);
+                printf("current file size is %d: \n\n", rcvd_packet.seq_num + rcvd_packet.data_len);
 
                 file_index += len;               
                 send_packet(s, FLAG_RESPONSE, OP_PUSH, 0, 0, NULL);
@@ -135,6 +135,7 @@ int main(void) {
                 SHA1(hash_out, file, file_index);
                 printf("received digest instruction!!\n");
                 printf("********** calculated digest **********\n");
+                int i;
                 for (i = 0; i < 20; i++) {
                     printf("%02x", hash_out[i]);
                     if (i % 2 == 1)
