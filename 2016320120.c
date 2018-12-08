@@ -114,9 +114,38 @@ int main(void) {
 
             } 
             else if(rcvd_packet.operation == OP_PUSH){
+                
+                memcpy(&(file[file_index]), rcvd_packet.data, len);
+
+                print("received push instruction!!\n");
+                printf("received seq_num : %d\n", rcvd_packet.seq_num);
+                printf("received data_len : %d\n", rcvd_packet.data_len);
+                printf("saved bytes from index %d to %d\n", rcvd_packet.seq_num, (rcvd_packet.seq_num+rcvd_packet.data_len-1));
+                printf("saved byte stream (character representation) : %s\n", rcvd_packet.data);
+                printf("current file size is : \n\n", rcvd_packet.seq_num + rcvd_packet.data_len);
+
+                file_index += len;               
+                send_packet(s, FLAG_RESPONSE, OP_PUSH, 0, 0, NULL);
 
             }
             else if(rcvd_packet.operation == OP_DIGEST){
+
+                unsigned char hash_out[20];
+
+                SHA1(hash_out, file, file_index);
+                printf("received digest instruction!!\n");
+                printf("********** calculated digest **********\n");
+                for (i = 0; i < 20; i++) {
+                    printf("%02x", hash_out[i]);
+                    if (i % 2 == 1)
+                        printf(" ");
+                    if (i % 8 == 7)
+                        printf("\n");
+            }
+            
+            printf("\n***************************************\n");
+            printf("send digest message to server!\n");                
+            send_packet(s, FLAG_RESPONSE, OP_DIGEST, 20, 0, hash_out);
 
             }
         }
