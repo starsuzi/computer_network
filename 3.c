@@ -10,7 +10,7 @@
 #define MAX_LINE 256
 #define MAX_FILE_SIZE 12288
 
-#define FLAG_HELLO		((uint8_t)(0x01 << 7))
+#define FLAG_HELLO		    ((uint8_t)(0x01 << 7))
 #define FLAG_INSTRUCTION	((uint8_t)(0x01 << 6))
 #define FLAG_RESPONSE		((uint8_t)(0x01 << 5))
 #define FLAG_TERMINATE		((uint8_t)(0x01 << 4))
@@ -18,8 +18,8 @@
 #define OP_ECHO		       	((uint8_t)(0x00))
 #define OP_INCREMENT		((uint8_t)(0x01))
 #define OP_DECREMENT		((uint8_t)(0x02))
-#define OP_PUSH			((uint8_t)(0x03))
-#define OP_DIGEST		((uint8_t)(0x04))
+#define OP_PUSH			    ((uint8_t)(0x03))
+#define OP_DIGEST		    ((uint8_t)(0x04))
 
 struct hw_packet {
   uint8_t  flag;
